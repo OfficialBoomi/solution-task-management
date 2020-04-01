@@ -9,11 +9,11 @@ create table if not exists access_log
 	user_email varchar(255) null,
 	login_time timestamp null,
 	flow_name varchar(255) null,
-	flow_id varchar(255) null,
-	tenant_id varchar(255) null,
-	state_id varchar(255) null,
-	version_id varchar(255) null,
-	viewing_task_uuid_string varchar(255) null
+	flow_id varchar(40) null,
+	tenant_id varchar(40) null,
+	state_id varchar(40) null,
+	version_id varchar(40) null,
+	viewing_task_uuid_string varchar(20) null
 );
 
 -- Core table on which the task management framework runs. Projects, statuses, and types/initiatives are presented views from columns in this table
@@ -22,8 +22,8 @@ create table if not exists task
 	task_pk int auto_increment
 		primary key,
 	task_subject varchar(255) null,
-	task_description varchar(2500) null,
-	task_uuid_string varchar(18) null,
+	task_description varchar(MAX) null,
+	task_uuid_string varchar(20) null,
 	last_modified_timestamp timestamp null,
 	created_timestamp timestamp null,
 	completed_timestamp timestamp null,
@@ -44,7 +44,7 @@ create table if not exists task_comments
 (
 	comment_pk int auto_increment
 		primary key,
-	comment_body varchar(9999) null,
+	comment_body varchar(MAX) null,
 	commenter varchar(255) null,
 	task_uuid_string varchar(20) null,
 	comment_time timestamp null
@@ -56,8 +56,8 @@ create table if not exists task_urls
 	url_pk int auto_increment
 		primary key,
 	asset_url varchar(255) null,
-	asset_name varchar(999) null,
-	related_task_uuid_string varchar(255) null,
+	asset_name varchar(255) null,
+	related_task_uuid_string varchar(20) null,
 	date_added timestamp null
 );
 

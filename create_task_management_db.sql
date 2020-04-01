@@ -207,4 +207,4 @@ INSERT INTO task (status_message, task_description)
 values('Complete', 'Initial dummy task to populate task status of ''Complete''');
 
 INSERT INTO task (status_message, task_description)
-values('Complete', 'Initial dummy task to populate task status of ''Working''');
+values('Working', 'Initial dummy task to populate task status of ''Working''');

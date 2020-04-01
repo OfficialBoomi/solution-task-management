@@ -200,11 +200,11 @@ group by a.parent_project, a.created_by
 order by project_task_count desc;
 
 -- Inserts three dummy tasks to populate the initial 'task statuses' of New, Complete, Working
-INSERT INTO task (status_message, task_description)
+INSERT INTO task (status_message, task_subject)
 values('New', 'Initial dummy task to populate task status of ''New''');
 
-INSERT INTO task (status_message, task_description)
+INSERT INTO task (status_message, task_subject)
 values('Complete', 'Initial dummy task to populate task status of ''Complete''');
 
-INSERT INTO task (status_message, task_description)
+INSERT INTO task (status_message, task_subject)
 values('Working', 'Initial dummy task to populate task status of ''Working''');

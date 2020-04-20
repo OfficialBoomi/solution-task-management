@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" class="manywho" style="height: 100%;">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+
+    <link rel="shortcut icon" href="https://assets.manywho.com/img/favicon/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="https://assets.manywho.com/img/favicon/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="57x57" href="https://assets.manywho.com/img/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="https://assets.manywho.com/img/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="https://assets.manywho.com/img/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="https://assets.manywho.com/img/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="https://assets.manywho.com/img/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="https://assets.manywho.com/img/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="https://assets.manywho.com/img/favicon/apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://assets.manywho.com/img/favicon/apple-touch-icon-180x180.png" />
+    <link rel="icon" sizes="192x192" href="https://assets.manywho.com/img/favicon/android-icon.png">
+    <meta name="msapplication-square310x310logo" content="https://assets.manywho.com/img/favicon/microsoft-310x310.png">
+
+    <title>Boomi Solutions</title>
+    <style>
+        .mw-bs .wait-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 500px;
+            z-index: 1100;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mw-bs .wait-message {
+            position: relative;
+            text-align: center;
+            margin-top: 1em;
+            display: block;
+            top: 40%;
+            font-size: 2em;
+            padding: 0 2em;
+        }
+
+        /* Spinner */
+        .mw-bs .wait-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            width: 150px;
+            height: 150px;
+            margin: 200px 0 0 -75px;
+            border-radius: 50%;
+            -webkit-animation: spin 2s linear infinite; /* Chrome, Opera 15+, Safari 5+ */
+            animation: spin 2s linear infinite; /* Chrome, Firefox 16+, IE 10+, Opera */
+            transform: scale(1.75);
+        }
+
+        /* More Spinner */
+        .mw-bs .wait-spinner:before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            animation: spinner .6s linear infinite;
+        }
+
+        @keyframes spinner {
+          to {transform: rotate(360deg);}
+        }
+        
+         @-webkit-keyframes fadeOut {
+            0% {opacity: 1;}
+            100% {opacity: 0;}
+         }
+         
+         @keyframes fadeOut {
+            0% {opacity: 1;}
+            100% {opacity: 0;}
+         }
+        
+        #taskr-foot {
+            position:absolute;
+            bottom:0;
+            right:20px;
+            z-index:999;
+            background-color:white;
+            font-family:sans-serif;
+            margin:5px;
+            font-size:9px;
+        }
+    </style>
+</head>
+<body style="height: 100%;">
+    <div id="manywho">
+        <div id="loader" class="mw-bs" style="width: 100%; height: 100%;">
+            <div class="wait-container">
+                <div class="wait-spinner"></div>
+            </div>
+        </div>
+        <div id="taskr-foot">Boomi Task Management Framework v1.0 - April 2020</div>
+    </div>
+
+    <script src="https://assets.manywho.com/js/vendor/jquery-2.1.4.min.js"></script>
+
+    <script>
+        var manywho = {
+            cdnUrl: 'https://assets.manywho.com',
+            requires: ['core', 'bootstrap3'],
+            customResources:[
+                'https://files-manywho-com.s3.amazonaws.com/653b081b-13a6-4f0d-ae5d-ae2347606c31/ElapsedTimeFriendly.min.js',
+                ],
+            initialize: function () {
+
+                var queryParameters = manywho.utils.parseQueryString(window.location.search.substring(1));
+
+                manywho.settings.initialize({
+                    platform: {
+                        uri: '',
+                    },
+                    adminTenantId: 'da497693-4d02-45db-bc08-8ea16d2ccbdf',
+                    playerUrl: [ location.protocol, '//', location.host, location.pathname ].join(''),
+                    joinUrl: [ location.protocol, '//', location.host, location.pathname ].join('')
+                });
+                
+                //Inputs 
+                var task_uuid_string = queryParameters['t']; //For input task_uuid_string
+                var inputs = [];
+                
+                if (task_uuid_string!=null)
+                   inputs.push({ "task_uuid_string": task_uuid_string });
+                 
+                var jsonInputs = manywho.json.generateFlowInputs(inputs);
+                //End bit for inputs ^^
+
+                var options = {
+                    authentication: {
+                        sessionId: queryParameters['session-token'],
+                        sessionUrl: queryParameters['session-url']
+                    },
+                    navigationElementId: queryParameters['navigation-element-id'],
+                    mode: queryParameters['mode'],
+                    reportingMode: queryParameters['reporting-mode'],
+                    replaceUrl: false,
+                    collaboration: {
+                        isEnabled: false
+                    },
+                    inputs: jsonInputs,
+                    annotations: null,
+                    navigation: {
+                        isFixed: true,
+                        isWizard: false
+                    },
+                    callbacks: [],
+                    theme: queryParameters['theme'] != null ? queryParameters['theme'] : 'yeti'
+                };
+                
+                
+                //Custom comments component based on Boomi Bot Framework
+                (function(manywho) {
+                class flowChat extends React.Component {
+                    componentDidMount() {
+                        const cScript = document.createElement("script");
+                        cScript.type = 'text/javascript';
+                        cScript.src = "https://s3.amazonaws.com/bdk-flow-ui/embed.js";
+                        cScript.async = true;
+                        document.body.appendChild(cScript);
+                    }
+                    render() {
+                        const chatOpt = {
+                            id: "flowchat",
+                            url: 'https://flow.boomi.com/c7b19d85-22ec-45ad-9aa4-13620a3f5578/play/bot/?flow-id=512f3b1d-c387-4a2b-9eb9-fd37ac57f61c&t=',
+                            defer: true, 
+                        }
+                        
+                        const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
+                
+                        return React.createElement("div", {
+                            "data-label": "Task Comments",
+                            "data-connect":"Authenticating and fetching task comments....",
+                            "data-url": chatOpt.url + model.contentValue,
+                            id: chatOpt.id
+                        }, React.createElement("script", {
+                            src: this.script,
+                            defer: chatOpt.defer
+                        }));
+                    }
+                };
+                manywho.component.register('flowchat', flowChat);
+                
+                
+                }(manywho));
+                //End Chat Code
+                
+                // Custom URL-oriented Navigation
+                const customNav = function newNav(props) {
+                    
+                    
+                  return React.createElement("nav", {
+                          class: "navbar navbar-default customnav"
+                        }, React.createElement("div", {
+                          class: " container"
+                        }, React.createElement("div", {
+                          class: "navbar-header"
+                        }, React.createElement("button", {
+                          class: "navbar-toggle collapsed",
+                          "data-toggle": "collapse",
+                          "data-target": ".navbar-collapse"
+                        }, React.createElement("span", {
+                          class: "sr-only"
+                        }, "Toggle Navigation"), React.createElement("span", {
+                          class: "icon-bar"
+                        }), React.createElement("span", {
+                          class: "icon-bar"
+                        }), React.createElement("span", {
+                          class: "icon-bar"
+                        })), React.createElement("a", {
+                          class: "navbar-brand",
+                          href: "#"
+                        }, "Boomi Task Mgmt.")), React.createElement("div", {
+                          class: "collapse navbar-collapse"
+                        }, React.createElement("ul", {
+                          class: "nav navbar-nav"
+                        }, 
+                        
+                        //First nav item - home
+                        React.createElement("li", {
+                          class: "top-nav-element"
+                        }, 
+                        React.createElement("a", {
+                          target: '_self',
+                          href: "https://flow.boomi.com" + window.location.pathname + "?flow-id=cbcb5cff-5dc6-4207-9368-9e6601fde615"
+                        }, "Home")), 
+                        //End first nav item
+                        
+                        //Second nav item - create task
+                        React.createElement("li", {
+                          class: "top-nav-element"
+                        }, 
+                        React.createElement("a", {
+                          href: "https://flow.boomi.com" + window.location.pathname + "?flow-id=564bd05b-6e5e-46d4-a325-ee814693e286"
+                        }, "Create Task")), 
+                        //End second nav item
+                        
+                        //Final navigation item
+                        React.createElement("li", {
+                          class: "top-nav-element"
+                        },
+                        React.createElement("a", {
+                          href: "https://flow.boomi.com" + window.location.pathname + "?flow-id=de3fdd9e-8e5b-4f65-9d45-cc5b6f6ea163"
+                        }, "Insights Dash"))))));
+                        //End final navitation item (If you're deleting this one be mindful of closing parens)
+                }
+                        
+                manywho.component.register('custom-nav', customNav);
+                //End navigation custom component
+                
+                // manywho.component.register('mw-table-large', manywho.component.getByName('mw-table-small'));
+
+                var tenantId = queryParameters['tenant-id'];
+                if (!tenantId) {
+                    tenantId =
+                        window.location.pathname
+                        .split('/')
+                        .filter(function (path) {
+                            return path && path.length > 0;
+                        })[0];
+                }
+
+                manywho.engine.initialize(
+                    tenantId,
+                    queryParameters['flow-id'],
+                    queryParameters['flow-version-id'],
+                    'main',
+                    queryParameters['join'],
+                    queryParameters['authorization'],
+                    options,
+                    queryParameters['initialization']
+                );
+
+            }
+        };
+    </script>
+
+    <script src="https://assets.manywho.com/js/loader.min.js"></script>
+    
+    <style>
+        .mw-bs .navbar-brand {
+            background: url(https://files-manywho-com.s3.amazonaws.com/0aea4ee2-b556-4b2d-a5d0-23cf444dad01/BoomiMarkRGBReverse.png);
+            background-repeat: no-repeat;
+            height: 35px;
+            margin: 5px 5px 5px 1px !important;
+            padding: 8px 5px 5px 5px !important;
+            background-size: contain;
+            text-indent:35px;
+        }
+        
+        .mw-bs .quick-create-box, .section-box {
+            border:1px solid grey;
+            background-color:aliceblue;
+            padding:5px 15px 0 15px;
+        }
+        
+        .mw-bs .customnav {
+            margin-bottom:30px;
+        }
+    </style>
+</body>
+</html>
